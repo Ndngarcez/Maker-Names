@@ -1,0 +1,546 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MakerNames — Name packs for CNC, laser and 3D</title>
+  <meta name="description" content="Create custom SVG, DXF and STL name packs for CNC, laser cutting and 3D printing. Fast maker tools for names, batches, support lines and accessories." />
+  <meta name="p:domain_verify" content="3e4743fb2de6c39daf15fc2f7c6f4920" />
+  <link rel="canonical" href="https://www.makernames.app/" />
+  <link rel="stylesheet" href="style.css?v=129" />
+  <style>
+    html.workspace-mode .canvas-wrap {
+      padding: 0 !important;
+      align-items: stretch !important;
+    }
+    html.workspace-mode .canvas {
+      width: 100% !important;
+      max-width: none !important;
+      height: 100% !important;
+      max-height: none !important;
+      border-radius: 0 !important;
+      border-top: 0 !important;
+      border-bottom: 0 !important;
+    }
+  </style>
+  <script>
+    if (new URLSearchParams(window.location.search).get("workspace") === "1") {
+      document.documentElement.classList.add("workspace-mode");
+    }
+  </script>
+</head>
+<body>
+  <header class="topbar">
+    <div class="logo">
+      <div class="logo-icon">M</div>
+      <div>
+        <strong class="notranslate" translate="no">MakerNames</strong>
+        <span>Name packs for makers</span>
+      </div>
+    </div>
+
+    <nav>
+      <a href="editor.html">Editor</a>
+      <a href="#features">Features</a>
+      <a href="/how-it-works.html">How it works</a>
+      <a href="/updates.html">Updates</a>
+      <a href="/library.html">Library</a>
+      <a href="#support">Donate</a>
+    </nav>
+
+    <div class="topbar-actions">
+      <a class="btn primary mobile-editor-button" id="mobileEditorOpen" href="editor.html?workspace=1">Editor</a>
+      <button class="btn ghost" id="authOpen" type="button">Sign in</button>
+      <button class="btn primary" id="authRegisterOpen" type="button">Create account</button>
+      <div class="account-pill" id="accountPill" hidden>
+        <span id="accountName">Account</span>
+        <button id="logoutButton" type="button">Log out</button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="hero-text">
+        <div class="badge">SVG + DXF + STL packs in seconds</div>
+        <h1>Create custom names ready for <span>CNC, laser and 3D printing</span>.</h1>
+        <p>Drop in a TXT list, connect the letters, add a support line and create your SVG, DXF and STL pack for production.</p>
+        <div class="hero-actions">
+          <a class="btn primary large" href="editor.html">Open editor</a>
+          <a class="btn ghost large" href="#features">See features</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="editor-card" id="editor">
+      <div class="editor-header">
+        <div>
+          <h2>Editor <span class="notranslate" translate="no">MakerNames</span></h2>
+          <p>A roomy canvas, live preview and production-ready exports.</p>
+        </div>
+        <div class="preview-axis-tools">
+          <div class="axis-locks">
+            <button id="letterLockX" type="button" aria-pressed="false">Lock X</button>
+            <button id="letterLockY" type="button" aria-pressed="false">Lock Y</button>
+          </div>
+        </div>
+        <div class="editor-actions">
+          <div class="header-action-group">
+            <span>Import</span>
+            <div class="import-grid compact">
+              <label>
+                TXT
+                <input type="file" id="txtInput" accept=".txt" hidden />
+              </label>
+              <label>
+                SVG
+                <input type="file" id="svgInput" accept=".svg,image/svg+xml" hidden />
+              </label>
+              <label>
+                DXF
+                <input type="file" id="dxfInput" accept=".dxf" hidden />
+              </label>
+              <label title="Import a PNG, JPG or WebP drawing and convert it to SVG">
+                IMG
+                <input type="file" id="imageInput" accept="image/png,image/jpeg,image/webp" hidden />
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="editor-grid">
+        <aside class="panel left-panel">
+          <div class="tabs">
+            <button class="active">Text</button>
+          </div>
+
+          <div class="mobile-control-group text-control-group" data-mobile-panel="text">
+            <button id="accessoryLibraryOpenMobile" class="small-action mobile-library-action" type="button">Open accessory library</button>
+
+            <label>Name</label>
+            <input id="nameInput" value="Mafalda" placeholder="Type a name" />
+
+            <label>Font</label>
+            <select id="fontSelect">
+              <option value="script">Script Maker</option>
+              <option value="Waltograph">Waltograph</option>
+              <option value="bold">Bold Kids</option>
+              <option value="elegant">Elegant CNC</option>
+            </select>
+            <div class="font-import-tools">
+              <button id="fontImportButton" type="button">Import font</button>
+              <input id="fontInput" type="file" accept=".ttf,.otf,font/ttf,font/otf" hidden />
+            </div>
+            <p id="fontImportStatus" class="font-import-note">
+              User-imported fonts are shared with everyone. Upload only fonts you have permission to share; <span class="notranslate" translate="no">MakerNames</span> does not verify ownership or third-party font licences.
+            </p>
+            <p id="importedFontNotice" class="font-import-note" hidden>
+              This font was imported by a user. Make sure you have the rights to use it for your project.
+            </p>
+
+            <div class="placed-name-actions">
+              <button id="placeNameButton" type="button">Add name to canvas</button>
+              <p id="placedNamesStatus">No saved names yet.</p>
+            </div>
+
+            <label>Color</label>
+            <div class="color-tools" id="colorSwatches" aria-label="Piece color">
+              <button type="button" data-color="#111111" style="--swatch: #111111" aria-label="Black"></button>
+              <button type="button" data-color="#6d36e8" style="--swatch: #6d36e8" aria-label="Purple"></button>
+              <button type="button" data-color="#f2b632" style="--swatch: #f2b632" aria-label="Gold"></button>
+              <button type="button" class="is-active" data-color="#e83aa9" style="--swatch: #e83aa9" aria-label="Pink"></button>
+              <button type="button" data-color="#0ea5e9" style="--swatch: #0ea5e9" aria-label="Blue"></button>
+              <button type="button" data-color="#16a34a" style="--swatch: #16a34a" aria-label="Green"></button>
+              <label class="custom-color">
+                <input id="customColor" type="color" value="#e83aa9" />
+                <span>Custom</span>
+              </label>
+            </div>
+
+            <button class="toggle active" id="joinToggle">
+              Connect letters <span></span>
+            </button>
+          </div>
+
+          <div class="mobile-control-group spacing-control-group" data-mobile-panel="spacing">
+            <div class="spacing-heading">
+              <label>Spacing</label>
+              <label class="letter-tools-label">Individual letters</label>
+            </div>
+            <div class="spacing-tools">
+              <button id="spacingDown">-</button>
+              <strong id="spacingValue">0</strong>
+              <button id="spacingUp">+</button>
+            </div>
+          </div>
+
+          <div class="mobile-control-group letter-control-group" data-mobile-panel="move">
+            <div class="letter-tools">
+              <div class="letter-nav">
+                <button id="letterPrev">Letter &lt;-</button>
+                <strong id="letterStatus">Letter: 1/1</strong>
+                <button id="letterNext">Letter -&gt;</button>
+              </div>
+              <span class="tool-caption">Move</span>
+              <div class="mini-grid">
+                <button id="letterLeft">←</button>
+                <button id="letterUp">↑</button>
+                <button id="letterDown">↓</button>
+                <button id="letterRight">→</button>
+              </div>
+              <span class="tool-caption letter-transform-caption">Rotate and scale</span>
+              <div class="mini-grid transform-grid letter-transform-tools">
+                <button id="letterRotateLeft">R-</button>
+                <button id="letterRotateRight">R+</button>
+                <button id="letterScaleDown">Scale -</button>
+                <button id="letterScaleUp">Scale +</button>
+              </div>
+              <button id="resetLetters" class="small-action">Reset letters</button>
+            </div>
+          </div>
+
+          <div class="mobile-control-group placed-name-control-group" data-mobile-panel="move">
+            <div class="placed-name-tools">
+              <span class="tool-caption">Saved name</span>
+              <div class="mini-grid">
+                <button id="placedNameLeft" type="button">←</button>
+                <button id="placedNameUp" type="button">↑</button>
+                <button id="placedNameDown" type="button">↓</button>
+                <button id="placedNameRight" type="button">→</button>
+              </div>
+              <div class="mini-grid transform-grid">
+                <button id="placedNameRotateLeft" type="button">R-</button>
+                <button id="placedNameRotateRight" type="button">R+</button>
+                <button id="placedNameScaleDown" type="button">Scale -</button>
+                <button id="placedNameScaleUp" type="button">Scale +</button>
+              </div>
+              <button id="placedNameDelete" class="small-action" type="button">Delete saved name</button>
+            </div>
+          </div>
+
+          <div class="mobile-control-group support-control-group" data-mobile-panel="support">
+            <button class="toggle active" id="lineToggle">
+              Support line <span></span>
+            </button>
+
+            <label>Support line</label>
+            <div class="line-tools">
+              <button id="lineUp">↑</button>
+              <button id="autoBase">Auto Base</button>
+              <button id="lineDown">↓</button>
+              <strong id="lineYValue">285</strong>
+            </div>
+            <input id="lineYRange" type="hidden" min="160" max="350" value="310" />
+            <input id="lineRange" type="hidden" min="1" max="1" value="1" />
+          </div>
+        </aside>
+
+        <section class="canvas-wrap">
+          <div class="ruler top-ruler"></div>
+          <div class="ruler left-ruler"></div>
+
+          <div class="canvas" id="canvas">
+            <div class="canvas-preview-tools">
+              <div class="preview-label">Preview</div>
+              <button id="stlPreviewOpen" class="preview-3d-button" type="button">3D Preview</button>
+              <div class="download-format-picker">
+                <button id="downloadMenuToggle" class="preview-3d-button download-menu-toggle" type="button" aria-haspopup="menu" aria-expanded="false"><span aria-hidden="true">↓</span> Download</button>
+                <div id="downloadFormatMenu" class="download-format-menu" role="menu" hidden>
+                  <button id="exportSvg" type="button" role="menuitem">SVG</button>
+                  <button id="exportDxf" type="button" role="menuitem">DXF</button>
+                  <button id="exportStl" type="button" role="menuitem">STL</button>
+                </div>
+              </div>
+            </div>
+            <div class="design-object" id="designObject">
+              <svg id="nameSvg" viewBox="0 0 1000 360" preserveAspectRatio="xMidYMid meet">
+                <defs>
+                  <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+                    <feDropShadow dx="0" dy="10" stdDeviation="8" flood-color="#000000" flood-opacity="0.18"/>
+                  </filter>
+                  <linearGradient id="wood" x1="0" x2="1">
+                    <stop offset="0%" stop-color="#f5c979"/>
+                    <stop offset="50%" stop-color="#ffdca0"/>
+                    <stop offset="100%" stop-color="#d89a45"/>
+                  </linearGradient>
+                </defs>
+                <g id="lettersGroup" filter="url(#shadow)"></g>
+                <rect id="svgLine" x="190" y="240" width="620" height="22" rx="11" filter="url(#shadow)"/>
+              </svg>
+            </div>
+          </div>
+          <div class="canvas-zoom">
+            <button id="zoomOut">-</button>
+            <button id="zoomIn">+</button>
+            <strong id="zoomLabel">Zoom: 100%</strong>
+          </div>
+          <div class="mobile-actions-slot" id="mobileActionsSlot"></div>
+        </section>
+
+        <aside class="panel right-panel">
+          <p class="hint" id="txtStatus">No list loaded yet.</p>
+          <div class="mobile-control-group accessory-control-group" data-mobile-panel="accessory">
+            <h3>Accessory</h3>
+            <div class="accessory-tools">
+              <strong id="accessoryStatus">No accessory</strong>
+              <div id="accessoryPreview" class="accessory-preview" aria-label="Accessory preview">
+                <span>No preview</span>
+              </div>
+              <p id="accessoryQuality" class="accessory-quality" hidden></p>
+              <div class="color-tools accessory-color-tools" id="accessoryColorSwatches" aria-label="Accessory color">
+                <button type="button" class="is-active" data-color="#111111" style="--swatch: #111111" aria-label="Accessory black"></button>
+                <button type="button" data-color="#6d36e8" style="--swatch: #6d36e8" aria-label="Accessory purple"></button>
+                <button type="button" data-color="#f2b632" style="--swatch: #f2b632" aria-label="Accessory gold"></button>
+                <button type="button" data-color="#e11d48" style="--swatch: #e11d48" aria-label="Accessory rose"></button>
+                <button type="button" data-color="#0ea5e9" style="--swatch: #0ea5e9" aria-label="Accessory blue"></button>
+                <button type="button" data-color="#16a34a" style="--swatch: #16a34a" aria-label="Accessory green"></button>
+                <label class="custom-color">
+                  <input id="customAccessoryColor" type="color" value="#111111" />
+                  <span>Accessory color</span>
+                </label>
+              </div>
+              <div id="accessoryQuickGrid" class="accessory-quick-grid" aria-label="Quick accessories">
+                <button type="button" class="accessory-quick-item" title="Love" data-name="Love" data-file="/accessories/real/love/3686-elementos-vtdesign.svg" data-scale="0.35">
+                  <img src="/accessories/heart.svg" alt="Heart">
+                </button>
+                <button type="button" class="accessory-quick-item" title="Star" data-name="Star" data-file="/accessories/real/stars/2294-elementos-vtdesign.svg" data-scale="0.32">
+                  <img src="/accessories/star.svg" alt="Star">
+                </button>
+                <button type="button" class="accessory-quick-item" title="Crown" data-name="Crown" data-file="/accessories/real/crowns/2100-elementos-vtdesign.svg" data-scale="0.34">
+                  <img src="/accessories/crown.svg" alt="Crown">
+                </button>
+                <button type="button" class="accessory-quick-item" title="Butterfly" data-name="Butterfly" data-file="/accessories/real/butterflies/butterfly-bow-silhouette.svg" data-scale="0.34">
+                  <img src="/accessories/butterfly.svg" alt="Butterfly">
+                </button>
+              </div>
+              <button id="accessoryLibraryOpen" class="small-action library-action" type="button">Open library</button>
+              <div class="image-trace-tools">
+                <button id="imageAccessoryImport" class="small-action" type="button">Import image</button>
+                <label class="image-import-mode" for="imageImportMode">
+                  <span>Image STL</span>
+                  <select id="imageImportMode">
+                    <option value="line-art">Outline</option>
+                    <option value="silhouette">Silhouette</option>
+                    <option value="cookie-cutter">Cookie cutter</option>
+                  </select>
+                </label>
+                <div class="image-search-row">
+                  <input id="imageSearchQuery" type="search" placeholder="Search coloring image" />
+                  <button id="imageSearchOpen" type="button">Search</button>
+                </div>
+                <p id="imageSearchStatus" class="image-search-status" hidden></p>
+                <div id="imageSearchResults" class="image-search-results" hidden></div>
+              </div>
+              <div class="mini-grid accessory-mobile-move" aria-label="Move accessory">
+                <button id="accessoryLeft" type="button">&larr;</button>
+                <button id="accessoryUp" type="button">&uarr;</button>
+                <button id="accessoryDown" type="button">&darr;</button>
+                <button id="accessoryRight" type="button">&rarr;</button>
+              </div>
+              <div class="mini-grid transform-grid">
+                <button id="accessoryRotateLeft">R-</button>
+                <button id="accessoryRotateRight">R+</button>
+                <button id="accessoryScaleDown">Scale -</button>
+                <button id="accessoryScaleUp">Scale +</button>
+              </div>
+              <p class="accessory-delete-hint">Press Del to remove the accessory.</p>
+              <button id="accessoryReset" class="small-action">Reset accessory</button>
+            </div>
+          </div>
+          <h3>Batch workflow</h3>
+          <div class="batch-box">
+            <strong id="batchName">names.txt</strong>
+            <span id="batchCount">0 names</span>
+          </div>
+
+          <button id="nextName" class="next">Next name</button>
+          <button id="downloadPackage" type="button" hidden aria-hidden="true" tabindex="-1">Download pack</button>
+          <p class="save-status" id="saveStatus"></p>
+        </aside>
+      </div>
+    </section>
+
+    <section class="community-strip" id="community" aria-labelledby="communityTitle">
+      <div class="community-heading">
+        <span>Download library</span>
+        <h2 id="communityTitle">Ready-to-download names</h2>
+        <p>Browse prepared <span class="notranslate" translate="no">MakerNames</span> packs for quick downloads.</p>
+      </div>
+      <div class="community-preview-grid" id="communityPreviewGrid">
+        <p class="community-empty">Loading download library...</p>
+      </div>
+      <div class="community-actions">
+        <a class="btn ghost" href="/library.html">Open download library</a>
+      </div>
+    </section>
+
+    <section class="features" id="features">
+      <article>
+        <h3>Fast</h3>
+        <p>Turn a TXT list into a run of ready-to-cut names.</p>
+      </article>
+      <article>
+        <h3>Smart setup</h3>
+        <p>Connect letters and align the base without tedious manual work.</p>
+      </article>
+      <article>
+        <h3>CNC/Laser</h3>
+        <p>SVG and DXF output built for real workshop production.</p>
+      </article>
+      <article>
+        <h3>3D Ready</h3>
+        <p>Create STL-ready name files for print workflows.</p>
+      </article>
+    </section>
+
+    <section class="pricing donate-section" id="support">
+      <div class="donate-card">
+        <div class="donate-copy">
+          <span>Support <span class="notranslate" translate="no">MakerNames</span></span>
+          <h2>Donate</h2>
+          <p>Help keep the editor free and improving.</p>
+        </div>
+        <a class="support-button donate-button" href="https://buy.stripe.com/bJe28taY70GY1HN0Xa53O03" target="_blank" rel="noopener noreferrer">Donate</a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <span class="notranslate" translate="no">MakerNames</span>
+    <a href="/about.html">About</a>
+    <a href="/how-it-works.html">How it works</a>
+    <a href="/updates.html">Updates</a>
+    <a href="/library.html">Library</a>
+    <a href="/contact.html">Contact</a>
+    <a href="/cookies.html">Cookie Policy</a>
+    <a href="/copyright.html">Copyright</a>
+    <a href="/privacy.html">Privacy Policy</a>
+    <a href="/terms.html">Terms</a>
+  </footer>
+
+  <div class="auth-modal" id="authModal" hidden>
+    <div class="auth-dialog" role="dialog" aria-modal="true" aria-labelledby="authTitle">
+      <button class="auth-close" id="authClose" type="button" aria-label="Close">×</button>
+      <div class="auth-tabs">
+        <button class="active" id="authLoginTab" type="button">Sign in</button>
+        <button id="authRegisterTab" type="button">Create account</button>
+      </div>
+      <form class="auth-form" id="authForm" novalidate>
+        <h2 id="authTitle">Sign in</h2>
+        <div id="authNameGroup" hidden>
+          <label for="authName">Name</label>
+          <input id="authName" autocomplete="name" placeholder="Your name" />
+        </div>
+        <div id="authEmailGroup">
+          <label for="authEmail">Email</label>
+          <input id="authEmail" type="email" autocomplete="email" placeholder="you@example.com" required />
+        </div>
+        <div id="authPasswordGroup">
+          <label for="authPassword">Password</label>
+          <div class="password-field">
+            <input id="authPassword" type="password" autocomplete="current-password" placeholder="At least 8 characters" required />
+            <button class="password-toggle" id="authPasswordToggle" type="button" aria-label="Show password" aria-pressed="false">
+              <svg class="password-eye password-eye-open" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M2.5 12s3.3-6.5 9.5-6.5 9.5 6.5 9.5 6.5-3.3 6.5-9.5 6.5S2.5 12 2.5 12Z" />
+                <circle cx="12" cy="12" r="3" />
+              </svg>
+              <svg class="password-eye password-eye-closed" viewBox="0 0 24 24" aria-hidden="true" hidden>
+                <path d="M3 3l18 18" />
+                <path d="M10.6 10.6A3 3 0 0 0 12 15a3 3 0 0 0 2.4-4.8" />
+                <path d="M6.2 6.8C3.8 8.5 2.5 12 2.5 12s3.3 6.5 9.5 6.5c1.7 0 3.2-.5 4.5-1.2" />
+                <path d="M9.4 5.8c.8-.2 1.7-.3 2.6-.3 6.2 0 9.5 6.5 9.5 6.5a15 15 0 0 1-3 3.8" />
+              </svg>
+            </button>
+          </div>
+        </div>
+        <button class="auth-link" id="forgotPasswordOpen" type="button">Forgot your password?</button>
+        <button class="btn primary auth-submit" id="authSubmit" type="submit">Sign in</button>
+        <p class="auth-message" id="authMessage"></p>
+      </form>
+    </div>
+  </div>
+
+  <div class="reward-modal" id="rewardModal" hidden>
+    <div class="reward-dialog" role="dialog" aria-modal="true" aria-labelledby="rewardTitle">
+      <button class="auth-close" id="rewardClose" type="button" aria-label="Close">×</button>
+      <div class="reward-video" aria-hidden="true">
+        <div class="reward-scene">
+          <span class="reward-tag">Sponsored video</span>
+          <strong>Create more with <span class="notranslate" translate="no">MakerNames</span></strong>
+          <small>SVG · DXF · STL</small>
+        </div>
+        <div class="reward-play">▶</div>
+        <div class="reward-progress"><span></span></div>
+        <div class="reward-bars">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+      </div>
+      <h2 id="rewardTitle">Watch to unlock your download</h2>
+      <p>Visitors can download for free after watching a short sponsor video. Create a free account to skip the video next time.</p>
+      <button class="btn primary reward-submit" id="rewardContinue" type="button" disabled>Continue in 8s</button>
+      <button class="auth-link reward-cancel" id="rewardCancel" type="button">Not now</button>
+    </div>
+  </div>
+
+  <div class="stl-preview-modal" id="stlPreviewModal" hidden>
+    <div class="stl-preview-dialog" role="dialog" aria-modal="true" aria-labelledby="stlPreviewTitle">
+      <button class="auth-close" id="stlPreviewClose" type="button" aria-label="Close">×</button>
+      <div class="stl-preview-stage" aria-hidden="true">
+        <div class="stl-preview-bed"></div>
+        <canvas id="stlPreviewModel" class="stl-preview-model" width="700" height="340"></canvas>
+        <div class="stl-preview-shadow"></div>
+      </div>
+      <div class="stl-preview-controls" aria-label="3D preview controls">
+        <div class="stl-material-picker" id="stlMaterialPicker" aria-label="Material">
+          <button type="button" class="is-active" data-material="plastic">Plastic</button>
+          <button type="button" data-material="matte">Matte</button>
+          <button type="button" data-material="acrylic">Acrylic</button>
+          <button type="button" data-material="gold">Gold</button>
+          <button type="button" data-material="silver">Silver</button>
+          <button type="button" data-material="wood">Wood</button>
+          <button type="button" data-material="neon">Neon</button>
+          <button type="button" data-material="ceramic">Ceramic</button>
+          <button type="button" data-material="black">Black</button>
+        </div>
+        <button class="stl-render-button" id="stlRenderButton" type="button">Generate render</button>
+      </div>
+      <h2 id="stlPreviewTitle">3D Preview</h2>
+      <p id="stlPreviewStatus">Drag the model to rotate it.</p>
+    </div>
+  </div>
+
+  <div class="library-modal" id="libraryModal" hidden>
+    <div class="library-dialog" role="dialog" aria-modal="true" aria-labelledby="libraryTitle">
+      <button class="auth-close" id="libraryClose" type="button" aria-label="Close">×</button>
+      <div class="library-header">
+        <div>
+          <h2 id="libraryTitle">Accessory library</h2>
+          <p>Pick an SVG accessory. Community SVGs are labelled for STL or 2D use.</p>
+        </div>
+        <input id="librarySearch" type="search" placeholder="Search accessories" />
+      </div>
+      <div class="library-categories" id="libraryCategories"></div>
+      <div class="library-grid" id="libraryGrid"></div>
+      <p class="library-empty" id="libraryEmpty" hidden>No accessories found.</p>
+    </div>
+  </div>
+
+  <section class="cookie-consent" id="cookieConsent" aria-label="Cookie consent" hidden>
+    <div>
+      <strong>Cookie choices</strong>
+      <p>We use essential cookies for login and security. Analytics and advertising cookies only load if you allow them.</p>
+    </div>
+    <div class="cookie-consent-actions">
+      <button class="btn ghost" id="cookieReject" type="button">Reject optional</button>
+      <button class="btn primary" id="cookieAccept" type="button">Accept all</button>
+      <a href="/cookies.html">Cookie Policy</a>
+    </div>
+  </section>
+
+  <script src="script.js?v=122"></script>
+</body>
+</html>
+

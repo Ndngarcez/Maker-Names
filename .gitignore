@@ -1,0 +1,13 @@
+**/bin/
+**/obj/
+**/.vs/
+**/App_Data/
+*.user
+*.suo
+*.pubxml
+*.pfx
+*.p12
+.env
+.env.*
+**/appsettings.Development.json
+**/appsettings.Production.json
