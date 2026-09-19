@@ -1,14 +1,11 @@
-# teste
-teste configuraçao
-
-## Maker Names
+# Maker Names
 
 Aplicação em C# / ASP.NET Core (.NET 8) para criar nomes personalizados e exportar SVG, STL e DXF.
 
 - `MakerNames.Api`: API, serviços e interface web em `wwwroot`.
 - `MakerNames.Core`: geração de nomes e geometria.
 
-### Executar localmente
+## Executar localmente
 
 Instala o SDK .NET 8 ou superior e executa na raiz:
 
@@ -19,7 +16,7 @@ dotnet run --project MakerNames.Api -- --desktop
 
 O modo desktop abre o editor em http://127.0.0.1:58731/editor.html?desktop=1.
 
-### Configuração
+## Configuração
 
 O ficheiro appsettings.json contém apenas valores de exemplo. Configura os serviços externos através de variáveis de ambiente, por exemplo `Smtp__Password`, `Stripe__WebhookSecret`, `GoogleSearch__ApiKey` e `ConnectionStrings__AuthDatabase`. Os serviços externos precisam da respetiva configuração para funcionar.
 
