@@ -103,3 +103,13 @@ A pasta `App_Data`, as configurações de desenvolvimento/produção e os fichei
 ### Descrição curta para currículo
 
 > Maker Names — projeto web em C# / ASP.NET Core e JavaScript para criar nomes personalizados e exportar SVG, DXF e STL para CNC, corte a laser e impressão 3D. Inclui editor visual, biblioteca de modelos e gestão de contas, com demonstração publicada no Azure.
+
+## Modo CNC (versão local)
+
+O editor alterna entre impressão 3D e preparação CNC, reutilizando os contornos do projeto sem converter STL em DXF. O modo CNC gera perfis 2.5D com compensação do raio da ferramenta (Clipper2), união das letras sobrepostas, preservação dos interiores e profundidades iguais por passagem. A largura final é definida explicitamente em milímetros.
+
+Controladores: GRBL (ferramenta montada manualmente, número em comentário) e Mach3 (T/M6; depende da configuração da máquina). Exportação `.nc`, coordenadas absolutas G54, Z zero no topo do material, origem XY no canto inferior esquerdo do desenho ou centro. Não inclui compensação de comprimento da ferramenta; montar e medir a ferramenta antes de executar. Sentido horário/anti-horário aplica-se a todos os contornos; não equivale a selecionar concordante/discordante.
+
+Pré-visualização superior do percurso e largura da fresa, com seleção da profundidade por passagem. Não é simulação de remoção volumétrica nem deteção de colisões. Entrada vertical, sem pontes, rampas ou desbaste de cavidades. A exportação bloqueia alterações na quantidade de contornos causadas pelo diâmetro; detalhes menores que a fresa podem exigir revisão. Confirmar grampos, material, origem e parâmetros, simular no controlador e ensaiar acima do material.
+
+Verificação: `dotnet run --project MakerNames.CncChecks`. Abrir o editor, escolher CNC, configurar, calcular e descarregar. Alterações ao projeto/parâmetros invalidam o percurso. Próximos passos: pontes de fixação, rampas, material/espessura, limites de máquina, estimativa de tempo e animação da ferramenta.
