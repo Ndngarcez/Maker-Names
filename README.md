@@ -113,3 +113,9 @@ Controladores: GRBL (ferramenta montada manualmente, número em comentário) e M
 Pré-visualização superior do percurso e largura da fresa, com seleção da profundidade por passagem. Não é simulação de remoção volumétrica nem deteção de colisões. Entrada vertical, sem pontes, rampas ou desbaste de cavidades. A exportação bloqueia alterações na quantidade de contornos causadas pelo diâmetro; detalhes menores que a fresa podem exigir revisão. Confirmar grampos, material, origem e parâmetros, simular no controlador e ensaiar acima do material.
 
 Verificação: `dotnet run --project MakerNames.CncChecks`. Abrir o editor, escolher CNC, configurar, calcular e descarregar. Alterações ao projeto/parâmetros invalidam o percurso. Próximos passos: pontes de fixação, rampas, material/espessura, limites de máquina, estimativa de tempo e animação da ferramenta.
+
+### Simulador de percurso integrado
+
+O modo CNC inclui reprodução/pausa, reinício, velocidade 1–100× e navegação temporal. O simulador interpreta os movimentos G0/G1 do próprio G-code exportado (mm absolutos), mostrando XYZ, passagem e sulcos com a largura da fresa e profundidade em cores. Começa após o primeiro posicionamento XY, pois a posição inicial real é desconhecida. É uma aproximação 2D para fresa cilíndrica; não simula colisões ou remoção volumétrica. A duração usa os avanços programados e rápidos estimados a 3000 mm/min, excluindo aceleração, spindle e troca de ferramenta. Alterar o projeto invalida também a simulação.
+
+Testes do simulador: `node MakerNames.CncChecks/simulator.test.cjs`.

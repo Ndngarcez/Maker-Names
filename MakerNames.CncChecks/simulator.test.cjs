@@ -1,0 +1,16 @@
+const assert=require('node:assert/strict');
+const {parse,sample}=require('../MakerNames.Api/wwwroot/v3/cnc-simulation.js');
+const plan=parse('G21\nG90\nG0 Z5\nG0 X0 Y0\nG1 Z-2 F60\nG1 X10 Y0 F600\nG0 Z5\nG0 X20 Y0\nM2');
+assert.equal(plan.moves.length,4);
+assert.equal(plan.moves[0].type,'plunge');
+assert.equal(plan.moves[0].duration,7);
+assert.equal(plan.moves[1].duration,1);
+assert.equal(sample(plan,7.5).position.x,5);
+assert.equal(sample(plan,7.5).position.z,-2);
+assert.equal(sample(plan,0).position.z,5);
+assert.equal(sample(plan,Infinity).position.x,20);
+assert.equal(sample(plan,plan.duration).position.z,5);
+assert.equal(plan.moves[2].type,'rapid');
+assert.throws(()=>parse('G0 Z5\nG0 X0 Y0\nG1 Z-1 F0'));
+assert.throws(()=>parse('M2'));
+console.log('PASS: simulator parsing, feeds, interpolation, retract, completion and invalid input');
