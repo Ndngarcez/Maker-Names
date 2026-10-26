@@ -54,7 +54,7 @@
       if(!response.ok)throw new Error(data.message || 'Não foi possível calcular o percurso.');
       result=data; snapshot=input; $('cncPass').max=data.depths.length; $('cncPass').value=1;
       $('cncDownload').disabled=false; $('cncStatus').textContent=`${data.width.toFixed(1)} × ${data.height.toFixed(1)} mm · ${data.paths.length} contornos · ${data.depths.length} passagens · ${(Math.abs(data.depths[0])).toFixed(3)} mm por passagem. Interiores antes dos exteriores.`;draw(); window.MakerCncSimulator?.load(data);
-    }catch(error){if(token===revision)$('cncStatus').textContent=error.message;}
+    }catch(error){if(token===revision){$('cncStatus').textContent=error.message; window.MakerCncSimulator?.clear('Simulação indisponível: '+error.message);}}
   };
   $('cncDownload').onclick=()=>{
     if(!result || snapshot!==fingerprint()){invalidate();return;}
