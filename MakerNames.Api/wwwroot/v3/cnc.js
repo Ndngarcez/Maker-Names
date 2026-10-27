@@ -4,7 +4,7 @@
   host.innerHTML = `<div class="cnc-modes" role="group" aria-label="Modo de fabrico"><button type="button" id="mode3d" aria-pressed="true">Impressão 3D</button><button type="button" id="modeCnc" aria-pressed="false">CNC</button></div>
   <div id="cncPanel" hidden><h2>Preparação CNC · corte de contornos</h2><p>Define as dimensões finais em mm. Z zero na superfície do material; origem XY no canto inferior esquerdo do desenho ou no centro. A fresa passa pelo exterior da peça e pelo interior dos furos.</p>
   <form id="cncForm"><div class="cnc-fields"></div><button type="submit" class="btn primary">Calcular percurso</button> <button type="button" id="cncDownload" class="btn" disabled>Descarregar G-code</button></form>
-  <p id="cncStatus" role="status">Configura a ferramenta e calcula a pré-visualização.</p>
+  <label id="cncExportWarning" hidden><input id="cncAcceptChanges" type="checkbox"> Aceito exportar o percurso simulado, mesmo que a fresa elimine detalhes ou una contornos. Vou verificar o ficheiro no controlador antes de cortar.</label><p id="cncStatus" role="status">Configura a ferramenta e calcula a pré-visualização.</p>
   <div class="cnc-preview"><svg id="cncSvg" role="img" aria-label="Percurso CNC em milímetros"></svg></div>
   <label>Passagem <input id="cncPass" type="range" min="1" max="1" value="1"><output id="cncDepth"></output></label>
   <p>Azul: centro da ferramenta · cinzento: largura de corte · laranja tracejado: deslocação com Z seguro · ponto verde: início. A vista é superior; a passagem selecionada indica a profundidade.</p>
@@ -20,7 +20,7 @@
   const project = () => buildProject({showBaseLine:false});
   const fingerprint = () => JSON.stringify({project:project(), settings:settings()});
   function settings() { const data = Object.fromEntries(new FormData($('cncForm'))); for (const [id] of numbers) data[id] = Number(data[id]); data.clockwise = data.clockwise === 'true'; return data; }
-  function invalidate() { window.MakerCncSimulator?.clear(); revision++; result=null; $('cncDownload').disabled=true; $('cncSvg').replaceChildren(); $('cncDepth').textContent=''; $('cncStatus').textContent='Parâmetros ou desenho alterados. Calcula novamente o percurso.'; }
+  function invalidate() { window.MakerCncSimulator?.clear(); revision++; result=null; $('cncAcceptChanges').checked=false; $('cncExportWarning').hidden=true; $('cncDownload').disabled=true; $('cncSvg').replaceChildren(); $('cncDepth').textContent=''; $('cncStatus').textContent='Parâmetros ou desenho alterados. Calcula novamente o percurso.'; }
   $('cncForm').addEventListener('input',invalidate);
   const observer = new MutationObserver(() => { if(result && fingerprint() !== snapshot) invalidate(); });
   const design = document.getElementById('designObject');
@@ -53,11 +53,12 @@
       const data=await response.json(); if(token!==revision || input!==fingerprint())return;
       if(!response.ok)throw new Error(data.message || 'Não foi possível calcular o percurso.');
       result=data; snapshot=input; $('cncPass').max=data.depths.length; $('cncPass').value=1;
-      $('cncDownload').disabled=!data.canExport; $('cncStatus').textContent=`${data.width.toFixed(1)} × ${data.height.toFixed(1)} mm · ${data.paths.length} contornos · ${data.depths.length} passagens · ${(Math.abs(data.depths[0])).toFixed(3)} mm por passagem. Interiores antes dos exteriores.`;draw(); window.MakerCncSimulator?.load(data);
+      $('cncExportWarning').hidden=data.canExport; $('cncDownload').disabled=!data.canExport; $('cncStatus').textContent=`${data.width.toFixed(1)} × ${data.height.toFixed(1)} mm · ${data.paths.length} contornos · ${data.depths.length} passagens · ${(Math.abs(data.depths[0])).toFixed(3)} mm por passagem. Interiores antes dos exteriores.`;draw(); window.MakerCncSimulator?.load(data);
     }catch(error){if(token===revision){$('cncStatus').textContent=error.message; window.MakerCncSimulator?.clear('Simulação indisponível: '+error.message);}}
   };
+  $('cncAcceptChanges').onchange=()=>{ $('cncDownload').disabled=!result || !(result.canExport || $('cncAcceptChanges').checked); };
   $('cncDownload').onclick=()=>{
-    if(!result || !result.canExport || snapshot!==fingerprint()){invalidate();return;}
-    const url=URL.createObjectURL(new Blob([result.gcode],{type:'text/plain'})); const a=document.createElement('a'); a.href=url;a.download='makernames-cnc.nc';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
+    if(!result || (!result.canExport && !$('cncAcceptChanges').checked) || snapshot!==fingerprint()){invalidate();return;}
+    const url=URL.createObjectURL(new Blob([result.gcode || result.simulationGcode],{type:'text/plain'})); const a=document.createElement('a'); a.href=url;a.download='makernames-cnc.nc';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
   };
 })();

@@ -121,3 +121,5 @@ O modo CNC inclui reprodução/pausa, reinício, velocidade 1–100× e navegaç
 Testes do simulador: `node MakerNames.CncChecks/simulator.test.cjs`.
 
 Quando o diâmetro altera a quantidade de contornos, o editor permite uma simulação de diagnóstico com aviso. O campo de exportação Gcode fica vazio e CanExport=false; SimulationGcode destina-se apenas à visualização. Não usar este percurso para produção.
+
+O download de um percurso com alterações geométricas pode ser desbloqueado através da confirmação explícita junto ao aviso. É exportado exatamente SimulationGcode, sem modificar os parâmetros. Uma alteração ao projeto ou aos parâmetros limpa a confirmação.

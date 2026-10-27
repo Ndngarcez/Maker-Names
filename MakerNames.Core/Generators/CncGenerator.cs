@@ -87,7 +87,7 @@ public class CncGenerator
         var offset = Clipper.InflatePaths(merged, s.Diameter/2, JoinType.Round, EndType.Polygon, precision: 3, arcTolerance: .03);
         if (offset.Count == 0) throw new ArgumentException("Não foi possível calcular um percurso para esta ferramenta.");
         var canExport = offset.Count == merged.Count && offset.Count(p => Clipper.Area(p) < 0) == merged.Count(p => Clipper.Area(p) < 0);
-        string? warning = canExport ? null : "Simulação de diagnóstico: a fresa elimina detalhes ou une contornos. O resultado difere do desenho. Exportação bloqueada; reduz o diâmetro ou aumenta a largura.";
+        string? warning = canExport ? null : "Simulação de diagnóstico: a fresa elimina detalhes ou une contornos. O resultado difere do desenho. Para preservar o desenho, reduz o diâmetro ou aumenta a largura. Para exportar este resultado, confirma que aceitas as alterações.";
         var ordered = offset.OrderBy(p => Math.Abs(Clipper.Area(p))).ToList();
         var paths = new List<List<CncPoint>>();
         foreach (var path in ordered)
