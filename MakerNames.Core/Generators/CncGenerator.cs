@@ -24,7 +24,7 @@ public class CncSettings
     public string Controller { get; set; } = "grbl";
 }
 public record CncPoint(double X, double Y);
-public record CncResult(List<List<CncPoint>> Paths, List<List<CncPoint>> Outline, double[] Depths, string Gcode, double Width, double Height, double Diameter);
+public record CncResult(List<List<CncPoint>> Paths, List<List<CncPoint>> Outline, double[] Depths, string Gcode, double Width, double Height, double Diameter, bool CanExport, string? Warning, string SimulationGcode);
 
 public class CncGenerator
 {
@@ -85,8 +85,9 @@ public class CncGenerator
         var oy = s.Origin == "center" ? height / 2 : 0;
         merged = new PathsD(merged.Select(p => new PathD(p.Select(v => new PointD((v.x-minX)*scale-ox, (v.y-minY)*scale-oy)))));
         var offset = Clipper.InflatePaths(merged, s.Diameter/2, JoinType.Round, EndType.Polygon, precision: 3, arcTolerance: .03);
-        if (offset.Count != merged.Count || offset.Count(p => Clipper.Area(p) < 0) != merged.Count(p => Clipper.Area(p) < 0))
-            throw new ArgumentException("A fresa elimina detalhes ou une contornos. Reduz o diâmetro ou aumenta a largura.");
+        if (offset.Count == 0) throw new ArgumentException("Não foi possível calcular um percurso para esta ferramenta.");
+        var canExport = offset.Count == merged.Count && offset.Count(p => Clipper.Area(p) < 0) == merged.Count(p => Clipper.Area(p) < 0);
+        string? warning = canExport ? null : "Simulação de diagnóstico: a fresa elimina detalhes ou une contornos. O resultado difere do desenho. Exportação bloqueada; reduz o diâmetro ou aumenta a largura.";
         var ordered = offset.OrderBy(p => Math.Abs(Clipper.Area(p))).ToList();
         var paths = new List<List<CncPoint>>();
         foreach (var path in ordered)
@@ -117,7 +118,7 @@ public class CncGenerator
                 Line($"G0 Z{F(s.SafeZ)}");
             }
         Line("M5"); Line("M2");
-        return new(paths, merged.Select(p => p.Select(v => new CncPoint(v.x,v.y)).ToList()).ToList(), depths, code.ToString(), s.Width, height, s.Diameter);
+        return new(paths, merged.Select(p => p.Select(v => new CncPoint(v.x,v.y)).ToList()).ToList(), depths, canExport ? code.ToString() : "", s.Width, height, s.Diameter, canExport, warning, code.ToString());
     }
     private static void Check(double n, double min, double max, string name)
     {

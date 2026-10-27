@@ -19,7 +19,8 @@ settings.Controller="grbl";
 var overlap=generator.Plan(new PathsD {Rect(0,0,100,100),Rect(50,0,100,100)},settings);
 Check(overlap.Paths.Count==1,"overlapping objects unioned");
 settings.Diameter=50;
-try{generator.Plan(shape,settings);throw new Exception("missing rejection");}catch(ArgumentException){Console.WriteLine("PASS inaccessible hole rejected");}
+var diagnostic=generator.Plan(shape,settings);
+Check(!diagnostic.CanExport && diagnostic.Gcode=="" && diagnostic.SimulationGcode.Length>0 && diagnostic.Warning!=null,"inaccessible hole allows diagnostic simulation but blocks export");
 settings.Diameter=4;settings.Clockwise=false;settings.Origin="center";settings.Start="right";
 var centered=generator.Plan(shape,settings);
 Check(Math.Abs(centered.Paths[1].Max(p=>p.X)-52)<.01,"center origin");

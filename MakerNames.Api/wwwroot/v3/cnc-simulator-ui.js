@@ -47,7 +47,7 @@
   document.addEventListener('visibilitychange',()=>{if(document.hidden)pause();});
   window.MakerCncSimulator={
     clear,
-    load(data){pause();result=data;plan=CncSimulation.parse(data.gcode);time=0;const points=data.paths.flat();minX=Infinity;maxY=-Infinity;let maxX=-Infinity,minY=Infinity;for(const p of points){minX=Math.min(minX,p.x);maxX=Math.max(maxX,p.x);minY=Math.min(minY,p.y);maxY=Math.max(maxY,p.y);}const pad=data.diameter/2+2;minX-=pad;maxX+=pad;minY-=pad;maxY+=pad;scale=Math.min(940/(maxX-minX),360/(maxY-minY));ready(true);render(true);host.scrollIntoView({block:"start",behavior:"smooth"});},
+    load(data){pause();result=data;plan=CncSimulation.parse(data.simulationGcode || data.gcode);time=0;const points=data.paths.flat();minX=Infinity;maxY=-Infinity;let maxX=-Infinity,minY=Infinity;for(const p of points){minX=Math.min(minX,p.x);maxX=Math.max(maxX,p.x);minY=Math.min(minY,p.y);maxY=Math.max(maxY,p.y);}const pad=data.diameter/2+2;minX-=pad;maxX+=pad;minY-=pad;maxY+=pad;scale=Math.min(940/(maxX-minX),360/(maxY-minY));ready(true,data.warning || "");render(true);host.scrollIntoView({block:"start",behavior:"smooth"});},
     pause
   };
   clear();

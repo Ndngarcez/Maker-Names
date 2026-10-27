@@ -53,11 +53,11 @@
       const data=await response.json(); if(token!==revision || input!==fingerprint())return;
       if(!response.ok)throw new Error(data.message || 'Não foi possível calcular o percurso.');
       result=data; snapshot=input; $('cncPass').max=data.depths.length; $('cncPass').value=1;
-      $('cncDownload').disabled=false; $('cncStatus').textContent=`${data.width.toFixed(1)} × ${data.height.toFixed(1)} mm · ${data.paths.length} contornos · ${data.depths.length} passagens · ${(Math.abs(data.depths[0])).toFixed(3)} mm por passagem. Interiores antes dos exteriores.`;draw(); window.MakerCncSimulator?.load(data);
+      $('cncDownload').disabled=!data.canExport; $('cncStatus').textContent=`${data.width.toFixed(1)} × ${data.height.toFixed(1)} mm · ${data.paths.length} contornos · ${data.depths.length} passagens · ${(Math.abs(data.depths[0])).toFixed(3)} mm por passagem. Interiores antes dos exteriores.`;draw(); window.MakerCncSimulator?.load(data);
     }catch(error){if(token===revision){$('cncStatus').textContent=error.message; window.MakerCncSimulator?.clear('Simulação indisponível: '+error.message);}}
   };
   $('cncDownload').onclick=()=>{
-    if(!result || snapshot!==fingerprint()){invalidate();return;}
+    if(!result || !result.canExport || snapshot!==fingerprint()){invalidate();return;}
     const url=URL.createObjectURL(new Blob([result.gcode],{type:'text/plain'})); const a=document.createElement('a'); a.href=url;a.download='makernames-cnc.nc';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
   };
 })();

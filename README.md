@@ -119,3 +119,5 @@ Verificação: `dotnet run --project MakerNames.CncChecks`. Abrir o editor, esco
 O modo CNC inclui reprodução/pausa, reinício, velocidade 1–100× e navegação temporal. O simulador interpreta os movimentos G0/G1 do próprio G-code exportado (mm absolutos), mostrando XYZ, passagem e sulcos com a largura da fresa e profundidade em cores. Começa após o primeiro posicionamento XY, pois a posição inicial real é desconhecida. É uma aproximação 2D para fresa cilíndrica; não simula colisões ou remoção volumétrica. A duração usa os avanços programados e rápidos estimados a 3000 mm/min, excluindo aceleração, spindle e troca de ferramenta. Alterar o projeto invalida também a simulação.
 
 Testes do simulador: `node MakerNames.CncChecks/simulator.test.cjs`.
+
+Quando o diâmetro altera a quantidade de contornos, o editor permite uma simulação de diagnóstico com aviso. O campo de exportação Gcode fica vazio e CanExport=false; SimulationGcode destina-se apenas à visualização. Não usar este percurso para produção.
