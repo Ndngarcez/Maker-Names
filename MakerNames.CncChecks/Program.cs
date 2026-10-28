@@ -28,3 +28,16 @@ Check(centered.Paths[1][0].X==centered.Paths[1].Max(p=>p.X),"right starting poin
 foreach(var p in centered.Paths)Check(Clipper.Area(new PathD(p.Select(v=>new PointD(v.X,v.Y))))>0,"counterclockwise orientation");
 settings.Depth=-1;
 try{generator.Generate(new NameProject(),settings);throw new Exception("missing rejection");}catch(ArgumentException){Console.WriteLine("PASS negative depth rejected");}
+var board = new CncSettings {WorkWidth=300,WorkHeight=200,Diameter=4};
+var figures = new List<List<CncPoint>> { new() {new(20,30),new(70,30),new(70,60),new(20,60)} };
+var figurePlan=generator.Generate(new NameProject(),board,figures,false);
+Check(figurePlan.Width==50 && figurePlan.Height==30,"figures retain exact millimetre dimensions");
+Check(figurePlan.Outline.SelectMany(p=>p).Min(p=>p.X)==20,"figure position preserved");
+board.Origin="center";
+var boardCenter=generator.Generate(new NameProject(),board,figures,false);
+Check(boardCenter.WorkX==-150 && boardCenter.Outline.SelectMany(p=>p).Min(p=>p.X)==-130,"origin uses work area center");
+board.WorkWidth=72;
+try{generator.Generate(new NameProject(),board,figures,false);throw new Exception("missing boundary rejection");}catch(ArgumentException){Console.WriteLine("PASS tool swept width outside area rejected");}
+board.WorkWidth=300;
+figures[0][0]=new(double.NaN,30);
+try{generator.Generate(new NameProject(),board,figures,false);throw new Exception("missing invalid figure rejection");}catch(ArgumentException){Console.WriteLine("PASS invalid figure rejected");}

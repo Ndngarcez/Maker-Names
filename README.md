@@ -123,3 +123,6 @@ Testes do simulador: `node MakerNames.CncChecks/simulator.test.cjs`.
 Quando o diâmetro altera a quantidade de contornos, o editor permite uma simulação de diagnóstico com aviso. O campo de exportação Gcode fica vazio e CanExport=false; SimulationGcode destina-se apenas à visualização. Não usar este percurso para produção.
 
 O download de um percurso com alterações geométricas pode ser desbloqueado através da confirmação explícita junto ao aviso. É exportado exatamente SimulationGcode, sem modificar os parâmetros. Uma alteração ao projeto ou aos parâmetros limpa a confirmação.
+
+### Área e figuras CNC
+No modo CNC, define a largura e altura da área em mm. Desenha retângulos, quadrados, círculos, elipses, triângulos e hexágonos por arrasto ou por medidas exatas; seleciona para alterar X/Y, dimensões ou eliminar. O nome pode ser incluído na mesma composição ou desativado para cortar apenas figuras. A origem CNC refere-se à área (canto ou centro); X/Y de desenho são sempre medidos desde o canto inferior esquerdo. As figuras mantêm as dimensões em mm e as sobreposições são unidas. O cálculo rejeita percursos cuja largura total de corte ultrapasse a área. A área não substitui a configuração dos limites físicos da máquina. As figuras permanecem apenas nesta sessão da página.

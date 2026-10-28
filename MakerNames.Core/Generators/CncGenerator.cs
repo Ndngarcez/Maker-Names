@@ -9,6 +9,10 @@ namespace MakerNames.Core.Generators;
 
 public class CncSettings
 {
+    public double WorkWidth { get; set; }
+    public double WorkHeight { get; set; }
+    public double DesignX { get; set; } = 10;
+    public double DesignY { get; set; } = 10;
     public double Width { get; set; } = 200;
     public double Depth { get; set; } = 3;
     public int Passes { get; set; } = 3;
@@ -24,12 +28,16 @@ public class CncSettings
     public string Controller { get; set; } = "grbl";
 }
 public record CncPoint(double X, double Y);
-public record CncResult(List<List<CncPoint>> Paths, List<List<CncPoint>> Outline, double[] Depths, string Gcode, double Width, double Height, double Diameter, bool CanExport, string? Warning, string SimulationGcode);
+public record CncResult(List<List<CncPoint>> Paths, List<List<CncPoint>> Outline, double[] Depths, string Gcode, double Width, double Height, double Diameter, bool CanExport, string? Warning, string SimulationGcode, double WorkWidth, double WorkHeight, double WorkX, double WorkY);
 
 public class CncGenerator
 {
     private static void Validate(CncSettings s)
     {
+        if (s.WorkWidth != 0 || s.WorkHeight != 0) {
+            Check(s.WorkWidth, 1, 3000, "Área: largura"); Check(s.WorkHeight, 1, 3000, "Área: altura");
+            Check(s.DesignX, 0, 3000, "Posição X"); Check(s.DesignY, 0, 3000, "Posição Y");
+        }
         Check(s.Width, 1, 3000, "Largura"); Check(s.Depth, .01, 100, "Profundidade");
         Check(s.Diameter, .1, 100, "Diâmetro"); Check(s.Feed, 1, 30000, "Avanço");
         Check(s.Plunge, 1, 10000, "Descida"); Check(s.SafeZ, .1, 100, "Z seguro");
@@ -39,9 +47,20 @@ public class CncGenerator
             throw new ArgumentException("Configuração CNC inválida.");
     }
 
-    public CncResult Generate(NameProject project, CncSettings s)
+    public CncResult Generate(NameProject project, CncSettings s, List<List<CncPoint>>? shapes = null, bool includeName = true)
     {
         Validate(s);
+        var extra = new PathsD();
+        if (shapes != null) {
+            if (shapes.Count > 100 || shapes.Sum(p => p?.Count ?? 0) > 10000) throw new ArgumentException("Demasiadas figuras.");
+            foreach (var polygon in shapes) {
+                if (polygon == null || polygon.Count < 3 || polygon.Any(p => p == null || !double.IsFinite(p.X) || !double.IsFinite(p.Y) || Math.Abs(p.X)>3000 || Math.Abs(p.Y)>3000)) throw new ArgumentException("Figura inválida.");
+                var path = new PathD(polygon.Select(p => new PointD(p.X,p.Y)));
+                if (Clipper.Area(path) < 0) path.Reverse();
+                extra.Add(path);
+            }
+        }
+        if (!includeName) return Plan(extra, s, true);
         if (project.Text is null || project.Text.Length > 200 || project.Letters is null || project.PlacedNames is null || project.ImportedObjects is null)
             throw new ArgumentException("Projeto CNC inválido ou demasiado extenso.");
         if (project.Letters.Count > 200 || project.PlacedNames.Count > 100 || project.ImportedObjects.Count > 100)
@@ -64,10 +83,20 @@ public class CncGenerator
         }
         foreach (var group in PlacedNameRenderer.GetTransformedContoursByName(project)) Add(group);
         foreach (var (_, group) in ImportedObjectRenderer.GetTransformedObjectContours(project)) Add(group);
+        if (s.WorkWidth > 0 || extra.Count > 0) {
+            var points = contours.SelectMany(p => p).ToList();
+            if (points.Count == 0) throw new ArgumentException("Nome sem contornos.");
+            var left = points.Min(p => p.x); var bottom = points.Min(p => p.y);
+            var span = points.Max(p => p.x)-left;
+            if (span <= .001) throw new ArgumentException("Nome sem largura.");
+            var scale = s.Width/span;
+            extra.AddRange(new PathsD(contours.Select(p => new PathD(p.Select(v => new PointD((v.x-left)*scale+s.DesignX,(v.y-bottom)*scale+s.DesignY))))));
+            return Plan(extra,s,true);
+        }
         return Plan(contours, s);
     }
 
-    public CncResult Plan(PathsD contours, CncSettings s)
+    public CncResult Plan(PathsD contours, CncSettings s, bool actualSize = false)
     {
         Validate(s);
         if (contours.Sum(p => p.Count) > 100000 || contours.SelectMany(p => p).Any(p => !double.IsFinite(p.x) || !double.IsFinite(p.y) || Math.Abs(p.x) > 1000000 || Math.Abs(p.y) > 1000000))
@@ -78,14 +107,18 @@ public class CncGenerator
         var minX = pts.Min(p => p.x); var minY = pts.Min(p => p.y);
         var span = pts.Max(p => p.x) - minX;
         if (span <= .001) throw new ArgumentException("Desenho sem largura.");
-        var scale = s.Width / span;
+        var scale = actualSize ? 1 : s.Width / span;
+        var width = span * scale;
         var height = (pts.Max(p => p.y) - minY) * scale;
         Check(height, .01, 3000, "Altura final");
-        var ox = s.Origin == "center" ? s.Width / 2 : 0;
-        var oy = s.Origin == "center" ? height / 2 : 0;
+        var ox = s.Origin == "center" ? (s.WorkWidth > 0 ? s.WorkWidth : width) / 2 : 0;
+        var oy = s.Origin == "center" ? (s.WorkHeight > 0 ? s.WorkHeight : height) / 2 : 0;
+        if (actualSize) { minX=0; minY=0; }
         merged = new PathsD(merged.Select(p => new PathD(p.Select(v => new PointD((v.x-minX)*scale-ox, (v.y-minY)*scale-oy)))));
         var offset = Clipper.InflatePaths(merged, s.Diameter/2, JoinType.Round, EndType.Polygon, precision: 3, arcTolerance: .03);
         if (offset.Count == 0) throw new ArgumentException("Não foi possível calcular um percurso para esta ferramenta.");
+        if (s.WorkWidth > 0 && offset.SelectMany(p => p).Any(p => p.x-s.Diameter/2 < -ox-.001 || p.y-s.Diameter/2 < -oy-.001 || p.x+s.Diameter/2 > s.WorkWidth-ox+.001 || p.y+s.Diameter/2 > s.WorkHeight-oy+.001))
+            throw new ArgumentException("O corte ultrapassa a área de trabalho, incluindo a largura da fresa. Move ou reduz as figuras, ou aumenta a área.");
         var canExport = offset.Count == merged.Count && offset.Count(p => Clipper.Area(p) < 0) == merged.Count(p => Clipper.Area(p) < 0);
         string? warning = canExport ? null : "Simulação de diagnóstico: a fresa elimina detalhes ou une contornos. O resultado difere do desenho. Para preservar o desenho, reduz o diâmetro ou aumenta a largura. Para exportar este resultado, confirma que aceitas as alterações.";
         var ordered = offset.OrderBy(p => Math.Abs(Clipper.Area(p))).ToList();
@@ -118,7 +151,7 @@ public class CncGenerator
                 Line($"G0 Z{F(s.SafeZ)}");
             }
         Line("M5"); Line("M2");
-        return new(paths, merged.Select(p => p.Select(v => new CncPoint(v.x,v.y)).ToList()).ToList(), depths, canExport ? code.ToString() : "", s.Width, height, s.Diameter, canExport, warning, code.ToString());
+        return new(paths, merged.Select(p => p.Select(v => new CncPoint(v.x,v.y)).ToList()).ToList(), depths, canExport ? code.ToString() : "", width, height, s.Diameter, canExport, warning, code.ToString(), s.WorkWidth, s.WorkHeight, -ox, -oy);
     }
     private static void Check(double n, double min, double max, string name)
     {

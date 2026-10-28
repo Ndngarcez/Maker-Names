@@ -22,6 +22,7 @@
   }
   function background(){
     base.clearRect(0,0,1000,420);base.fillStyle='#f1e1c3';base.fillRect(0,0,1000,420);
+    if(result.workWidth>0){const corner=px({x:result.workX,y:result.workY+result.workHeight});base.strokeStyle='#475569';base.lineWidth=2;base.strokeRect(corner.x,corner.y,result.workWidth*scale,result.workHeight*scale);}
     base.strokeStyle='#806747';base.lineWidth=1;
     for(const path of result.outline){base.beginPath();path.forEach((p,i)=>{const q=px(p);if(i)base.lineTo(q.x,q.y);else base.moveTo(q.x,q.y);});base.closePath();base.stroke();}painted=-1;
   }
@@ -51,7 +52,7 @@
   document.addEventListener('visibilitychange',()=>{if(document.hidden)pause();});
   window.MakerCncSimulator={
     clear,
-    load(data){pause();result=data;plan=CncSimulation.parse(data.simulationGcode || data.gcode);time=0;const points=data.paths.flat();minX=Infinity;maxY=-Infinity;let maxX=-Infinity,minY=Infinity;for(const p of points){minX=Math.min(minX,p.x);maxX=Math.max(maxX,p.x);minY=Math.min(minY,p.y);maxY=Math.max(maxY,p.y);}const pad=data.diameter/2+2;minX-=pad;maxX+=pad;minY-=pad;maxY+=pad;scale=Math.min(940/(maxX-minX),360/(maxY-minY));ready(true,data.warning || "");render(true);host.scrollIntoView({block:"start",behavior:"smooth"});},
+    load(data){pause();result=data;plan=CncSimulation.parse(data.simulationGcode || data.gcode);time=0;const points=data.paths.flat();if(data.workWidth>0)points.push({x:data.workX,y:data.workY},{x:data.workX+data.workWidth,y:data.workY+data.workHeight});minX=Infinity;maxY=-Infinity;let maxX=-Infinity,minY=Infinity;for(const p of points){minX=Math.min(minX,p.x);maxX=Math.max(maxX,p.x);minY=Math.min(minY,p.y);maxY=Math.max(maxY,p.y);}const pad=data.diameter/2+2;minX-=pad;maxX+=pad;minY-=pad;maxY+=pad;scale=Math.min(940/(maxX-minX),360/(maxY-minY));ready(true,data.warning || "");render(true);host.scrollIntoView({block:"start",behavior:"smooth"});},
     pause
   };
   clear();
