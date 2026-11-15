@@ -30,3 +30,17 @@ Tabelas Shop* novas na mesma ligação SQL, sem modificar AppState/auth. Desenvo
 
 ## Deploy
 Gerar nova publicação limpa, medir tamanho, confirmar ausência de bibliotecas/App_Data/segredos. Pacotes antigos na pasta superior não são o novo deploy. Não publicar no Azure automaticamente; o site existente e respetivos dados continuam intactos.
+
+## Revisão de âmbito confirmada pelo proprietário
+As instruções posteriores substituem o plano acima nesta entrega: Stripe fica adiado; manter o editor 3D existente, retirar CNC e exemplos de nomes preparados, trocar downloads por Adicionar ao carrinho.
+
+Implementado:
+- Editor e fontes continuam em wwwroot/v3 e wwwroot/fonts. Generate e ImageSearch foram preservados para o editor; Generate mantém fontes, SVG e STL de pré-visualização, sem rotas de pacote/download.
+- Core continua referenciado para as pré-visualizações. Não foi movido para ferramentas internas.
+- Biblioteca de nomes, controladores de biblioteca/comunidade/publicidade/CNC/Stripe e serviços exclusivos removidos. Quatro formas leves e os acessórios rápidos necessários foram conservados.
+- Carrinho local guarda uma cópia integral do projeto, quantidade e nome; permite remover, alterar quantidades e persistir após recarregar. Limites e falhas de armazenamento tratados. Não guarda dados pessoais de checkout.
+- Sem preços inventados, checkout, envio de encomendas ou pagamentos nesta entrega. O carrinho explica essa limitação. Administração e restante loja do plano inicial ficam para uma entrega posterior.
+- Contas, dados, configuração e ficheiros ignorados pelo Git não foram apagados. Páginas informativas existentes preservadas; revisão editorial/legal ainda pendente.
+
+Validação: build e publish Release concluídos; 2 testes Node do carrinho (gravação completa, recarregar, quantidades, remoção, vazio e quota); respostas HTTP 200 do editor, carrinho, fontes e geração SVG/STL. A validação visual no navegador integrado ficou impedida por timeout de localhost.
+Publish limpo: 29,38 MiB, contra aproximadamente 738,4 MiB anteriormente; sem DownloadLibrary, library, CNC público, App_Data ou configuração Development. Não foi aplicado ao Azure.

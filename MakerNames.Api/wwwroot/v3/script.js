@@ -23,7 +23,7 @@ const nextName = document.getElementById("nextName");
 const exportSvg = document.getElementById("exportSvg");
 const exportDxf = document.getElementById("exportDxf");
 let exportStl = document.getElementById("exportStl");
-const downloadPackage = document.getElementById("downloadPackage");
+const downloadPackage = document.getElementById("addToCart");
 const downloadMenuToggle = document.getElementById("downloadMenuToggle");
 const downloadFormatMenu = document.getElementById("downloadFormatMenu");
 const saveStatus = document.getElementById("saveStatus");
@@ -222,12 +222,7 @@ const mobileOriginalParents = new Map();
 let mobileToolRail = null;
 let mobileDownloadSlot = null;
 
-if (!exportStl) {
-  exportStl = document.createElement("button");
-  exportStl.id = "exportStl";
-  exportStl.textContent = "STL";
-  exportDxf.insertAdjacentElement("afterend", exportStl);
-}
+
 
 function getDefaultZoom() {
   if (window.matchMedia("(max-width: 650px)").matches) return 4.1;
@@ -2855,7 +2850,7 @@ async function loadAccessoryCatalog() {
   if (accessoryCatalogLoaded) return;
 
   const officialCatalog = await fetchAccessoryCatalogSource("/accessories/catalog.json");
-  const communityCatalog = await fetchAccessoryCatalogSource("/api/Accessories/community?take=180");
+  const communityCatalog = [];
   accessoryCatalog = [...communityCatalog, ...officialCatalog];
   accessoryCatalogLoaded = true;
   renderQuickAccessories();
@@ -3215,10 +3210,9 @@ document.addEventListener("keydown", event => {
   if (event.key === "Escape") closeDownloadFormatMenu();
 });
 
-exportSvg.addEventListener("click", () => { closeDownloadFormatMenu(); exportFromApi("svg", "image/svg+xml"); });
-exportDxf.addEventListener("click", () => { closeDownloadFormatMenu(); exportFromApi("dxf", "application/dxf"); });
-exportStl.addEventListener("click", () => { closeDownloadFormatMenu(); exportFromApi("stl", "model/stl"); });
-downloadPackage?.addEventListener("click", () => exportFromApi("package", "application/zip", "zip"));
+exportSvg?.addEventListener("click", () => { closeDownloadFormatMenu(); exportFromApi("svg", "image/svg+xml"); });
+exportDxf?.addEventListener("click", () => { closeDownloadFormatMenu(); exportFromApi("dxf", "application/dxf"); });
+exportStl?.addEventListener("click", () => { closeDownloadFormatMenu(); exportFromApi("stl", "model/stl"); });
 stlPreviewOpen?.addEventListener("click", () => {
   showStlPreview("Loading the real 3D preview...", buildProject({ showBaseLine: false }));
 });

@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>MakerNames Editor</title>
-  <meta name="description" content="Create SVG, DXF and STL name packs in the full-screen MakerNames editor." />
+  <title>MakerNames — Produtos personalizados</title>
+  <meta name="description" content="Personaliza o teu nome no editor MakerNames, vê a pré-visualização 3D e guarda o desenho no carrinho." />
   <meta name="robots" content="noindex" />
   <meta name="p:domain_verify" content="3e4743fb2de6c39daf15fc2f7c6f4920" />
   <link rel="canonical" href="https://www.makernames.app/v3/editor.html" />
@@ -29,14 +29,14 @@
       document.documentElement.classList.add("workspace-mode");
     }
   </script>
-<link rel="stylesheet" href="/v3/cnc.css?v=5" /></head>
+</head>
 <body class="workspace-mode">
   <header class="topbar">
     <div class="logo">
       <div class="logo-icon">M</div>
       <div>
         <strong class="notranslate" translate="no">MakerNames</strong>
-        <span>Name packs for makers</span>
+        <span>Produtos personalizados</span>
       </div>
     </div>
 
@@ -45,7 +45,7 @@
       <a href="#features">Features</a>
       <a href="/how-it-works.html">How it works</a>
       <a href="/updates.html">Updates</a>
-      <a href="/library.html">Library</a>
+
       <a href="#support">Donate</a>
     </nav>
 
@@ -63,9 +63,9 @@
   <main>
     <section class="hero">
       <div class="hero-text">
-        <div class="badge">SVG + DXF + STL packs in seconds</div>
-        <h1>Create custom names ready for <span>CNC, laser and 3D printing</span>.</h1>
-        <p>Drop in a TXT list, connect the letters, add a support line and create your SVG, DXF and STL pack for production.</p>
+        <div class="badge">Feito à tua medida</div>
+        <h1>Cria um nome <span>feito para ti</span>.</h1>
+        <p>Personaliza o teu desenho, vê o resultado em 3D e adiciona-o ao carrinho.</p>
         <div class="hero-actions">
           <a class="btn primary large" href="editor.html">Open editor</a>
           <a class="btn ghost large" href="#features">See features</a>
@@ -77,7 +77,7 @@
       <div class="editor-header">
         <div>
           <h2>Editor <span class="notranslate" translate="no">MakerNames</span></h2>
-          <p>A roomy canvas, live preview and production-ready exports.</p>
+          <p>Personaliza o teu nome e adiciona o desenho ao carrinho.</p>
         </div>
         <div class="preview-axis-tools">
           <div class="axis-locks">
@@ -120,14 +120,14 @@
             <button id="accessoryLibraryOpenMobile" class="small-action mobile-library-action" type="button">Open accessory library</button>
 
             <label>Name</label>
-            <input id="nameInput" value="Mafalda" placeholder="Type a name" />
+            <input id="nameInput" value="" placeholder="Type a name" />
 
             <label>Font</label>
             <select id="fontSelect">
               <option value="script">Script Maker</option>
               <option value="Waltograph">Waltograph</option>
               <option value="bold">Bold Kids</option>
-              <option value="elegant">Elegant CNC</option>
+              <option value="elegant">Elegant</option>
             </select>
             <div class="font-import-tools">
               <button id="fontImportButton" type="button">Import font</button>
@@ -245,14 +245,7 @@
             <div class="canvas-preview-tools">
               <div class="preview-label">Preview</div>
               <button id="stlPreviewOpen" class="preview-3d-button" type="button">3D Preview</button>
-              <div class="download-format-picker">
-                <button id="downloadMenuToggle" class="preview-3d-button download-menu-toggle" type="button" aria-haspopup="menu" aria-expanded="false"><span aria-hidden="true">↓</span> Download</button>
-                <div id="downloadFormatMenu" class="download-format-menu" role="menu" hidden>
-                  <button id="exportSvg" type="button" role="menuitem">SVG</button>
-                  <button id="exportDxf" type="button" role="menuitem">DXF</button>
-                  <button id="exportStl" type="button" role="menuitem">STL</button>
-                </div>
-              </div>
+              <button id="addToCart" class="preview-3d-button" type="button">Adicionar ao carrinho</button> <a class="preview-3d-button" href="/carrinho.html">Carrinho <span data-cart-count></span></a>
             </div>
             <div class="design-object" id="designObject">
               <svg id="nameSvg" viewBox="0 0 1000 360" preserveAspectRatio="xMidYMid meet">
@@ -356,25 +349,13 @@
           </div>
 
           <button id="nextName" class="next">Next name</button>
-          <button id="downloadPackage" type="button" hidden aria-hidden="true" tabindex="-1">Download pack</button>
+
           <p class="save-status" id="saveStatus"></p>
         </aside>
       </div>
     </section>
 
-    <section class="community-strip" id="community" aria-labelledby="communityTitle">
-      <div class="community-heading">
-        <span>Download library</span>
-        <h2 id="communityTitle">Ready-to-download names</h2>
-        <p>Browse prepared <span class="notranslate" translate="no">MakerNames</span> packs for quick downloads.</p>
-      </div>
-      <div class="community-preview-grid" id="communityPreviewGrid">
-        <p class="community-empty">Loading download library...</p>
-      </div>
-      <div class="community-actions">
-        <a class="btn ghost" href="/library.html">Open download library</a>
-      </div>
-    </section>
+
 
     <section class="features" id="features">
       <article>
@@ -386,7 +367,7 @@
         <p>Connect letters and align the base without tedious manual work.</p>
       </article>
       <article>
-        <h3>CNC/Laser</h3>
+        <h3>Personalização</h3>
         <p>SVG and DXF output built for real workshop production.</p>
       </article>
       <article>
@@ -412,7 +393,7 @@
     <a href="/about.html">About</a>
     <a href="/how-it-works.html">How it works</a>
     <a href="/updates.html">Updates</a>
-    <a href="/library.html">Library</a>
+
     <a href="/contact.html">Contact</a>
     <a href="/cookies.html">Cookie Policy</a>
     <a href="/copyright.html">Copyright</a>
@@ -506,7 +487,7 @@
           <button type="button" data-material="ceramic">Ceramic</button>
           <button type="button" data-material="black">Black</button>
         </div>
-        <button class="stl-render-button" id="stlRenderButton" type="button">Generate render</button>
+
       </div>
       <h2 id="stlPreviewTitle">3D Preview</h2>
       <p id="stlPreviewStatus">Drag the model to rotate it.</p>
@@ -541,6 +522,6 @@
     </div>
   </section>
 
-  <script src="script.js?v=122"></script>
-<script src="/v3/cnc.js?v=7"></script><script src="/v3/cnc-drawing.js?v=1"></script><script src="/v3/cnc-simulation.js?v=1"></script><script src="/v3/cnc-simulator-ui.js?v=5"></script></body>
+  <script src="script.js?v=123"></script>
+<script src="/v3/cart.js?v=1"></script></body>
 </html>
