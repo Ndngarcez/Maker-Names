@@ -55,11 +55,11 @@ builder.Services.AddHttpClient("image-search")
 
 builder.Services.AddSingleton<UserStore>();
 
+builder.Services.AddSingleton<CommunityStore>();
 
+builder.Services.AddSingleton<CommunityAccessoryStore>();
 
-
-
-
+builder.Services.AddSingleton<DownloadLibraryStore>();
 
 builder.Services.AddSingleton<EmailSender>();
 

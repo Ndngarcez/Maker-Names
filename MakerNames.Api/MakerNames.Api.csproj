@@ -19,6 +19,8 @@
     <Content Update="appsettings.Development.json" CopyToPublishDirectory="Never" />
     <Content Update="App_Data\**\*" CopyToPublishDirectory="Never" />
     <Content Remove="DownloadLibrary\**\*" />
+    <None Remove="DownloadLibrary\**\*" />
+    <Content Include="DownloadLibrary\**\*" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
   </ItemGroup>
 
 </Project>
