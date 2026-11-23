@@ -20,7 +20,7 @@
     <Content Update="App_Data\**\*" CopyToPublishDirectory="Never" />
     <Content Remove="DownloadLibrary\**\*" />
     <None Remove="DownloadLibrary\**\*" />
-    <Content Include="DownloadLibrary\**\*" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+    <Content Update="wwwroot\library\**\*;wwwroot\library.html;wwwroot\library.js" CopyToPublishDirectory="Never" />
   </ItemGroup>
 
 </Project>
